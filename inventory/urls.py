@@ -28,13 +28,11 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('admin/logout/', custom_logout, name='custom_logout'),
     path('api/register-superadmin/', RegisterSuperAdminView.as_view(), name='register_superadmin'),
     path('login/sales/', SalesLoginView.as_view(), name='sales-login'),
     path('login/inventory/', InventoryLoginView.as_view(), name='inventory-login'),
     path('login/finance/', FinanceLoginView.as_view(), name='finance-login'),
     path('login/customer-support/', CustomerSupportLoginView.as_view(), name='customer-support-login'),
-    path('documentation/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    path('openapi/', schema_view.without_ui(cache_timeout=0), name='schema-openapi-json'),  # OpenAPI spec in JSON format
+    path('yaml/', SpectacularAPIView.as_view(), name='schema'),
+    path('documentation/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

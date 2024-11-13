@@ -23,29 +23,34 @@ from rest_framework.exceptions import NotFound
 
 from .permissions import DepartmentPermission  # Import custom permission class
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.utils import extend_schema
+from .serializers import LoginRequestSerializer
 
 class SalesLoginView(APIView):
-    """
-    Custom view for Sales department login.
-    """
     permission_classes = [AllowAny]
     authentication_classes = []
+
+    @extend_schema(
+        description="Login endpoint for Sales department",
+        request=LoginRequestSerializer,  # Reference the serializer here
+        responses={
+            200: "Tokens generated successfully",
+            401: "Invalid credentials",
+            403: "Permission Denied - Not part of Sales department",
+        }
+    )
     def post(self, request):
         username = request.data.get('email')
         password = request.data.get('password')
-
-        # Authenticate the user
+        
         user = authenticate(username=username, password=password)
-
         if user is None:
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the user belongs to the 'Sales' department
         if not user.groups.filter(name='Sales').exists():
             raise PermissionDenied("You do not belong to the Sales department.")
-
-        # Issue tokens
+        
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
@@ -60,21 +65,26 @@ class InventoryLoginView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    @extend_schema(
+        description="Login endpoint for Sales department",
+        request=LoginRequestSerializer,  # Reference the serializer here
+        responses={
+            200: "Tokens generated successfully",
+            401: "Invalid credentials",
+            403: "Permission Denied - Not part of Sales department",
+        }
+    )
     def post(self, request):
         username = request.data.get('email')
         password = request.data.get('password')
-
-        # Authenticate the user
+        
         user = authenticate(username=username, password=password)
-
         if user is None:
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the user belongs to the 'Inventory Management' department
         if not user.groups.filter(name='Inventory Management').exists():
             raise PermissionDenied("You do not belong to the Inventory Management department.")
-
-        # Issue tokens
+        
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
@@ -89,21 +99,26 @@ class FinanceLoginView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    @extend_schema(
+        description="Login endpoint for Sales department",
+        request=LoginRequestSerializer,  # Reference the serializer here
+        responses={
+            200: "Tokens generated successfully",
+            401: "Invalid credentials",
+            403: "Permission Denied - Not part of Sales department",
+        }
+    )
     def post(self, request):
         username = request.data.get('email')
         password = request.data.get('password')
-
-        # Authenticate the user
+        
         user = authenticate(username=username, password=password)
-
         if user is None:
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the user belongs to the 'Finance' department
         if not user.groups.filter(name='Finance').exists():
             raise PermissionDenied("You do not belong to the Finance department.")
-
-        # Issue tokens
+        
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
@@ -115,26 +130,29 @@ class FinanceLoginView(APIView):
 
 
 class CustomerSupportLoginView(APIView):
-    """
-    Custom view for Customer Support department login.
-    """
     permission_classes = [AllowAny]
     authentication_classes = []
+
+    @extend_schema(
+        description="Login endpoint for Sales department",
+        request=LoginRequestSerializer,  # Reference the serializer here
+        responses={
+            200: "Tokens generated successfully",
+            401: "Invalid credentials",
+            403: "Permission Denied - Not part of Sales department",
+        }
+    )
     def post(self, request):
-        email = request.data.get('email')
+        username = request.data.get('email')
         password = request.data.get('password')
-
-        # Authenticate the user
-        user = authenticate(username=email, password=password)
-
+        
+        user = authenticate(username=username, password=password)
         if user is None:
             return Response({"detail": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the user belongs to the 'Customer Support' department
         if not user.groups.filter(name='Customer Support').exists():
             raise PermissionDenied("You do not belong to the Customer Support department.")
-
-        # Issue tokens
+        
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
@@ -145,12 +163,18 @@ class CustomerSupportLoginView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-
-
-
-
 class RegisterSuperAdminView(APIView):
     permission_classes = [AllowAny]
+
+    @extend_schema(
+        description="Login endpoint for Sales department",
+        request=SuperAdminRegistrationSerializer,  # Reference the serializer here
+        responses={
+            200: "Tokens generated successfully",
+            401: "Invalid credentials",
+            403: "Permission Denied - Not part of Sales department",
+        }
+    )
 
     def post(self, request):
         serializer = SuperAdminRegistrationSerializer(data=request.data)
@@ -182,12 +206,3 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         else:
             return Response({"detail": "Invalid test email or password."}, status=status.HTTP_401_UNAUTHORIZED)
 
-
-from django.contrib.auth import logout
-from django.shortcuts import redirect
-from django.http import HttpResponseForbidden
-def custom_logout(request):
-    if request.method == 'GET':
-        logout(request)
-        return redirect('login')  # Redirect to the login page after logout
-    return HttpResponseForbidden("Invalid request method.")

@@ -65,3 +65,24 @@ class StaffUserSerializer(serializers.ModelSerializer):
         return user
 
 
+from rest_framework import serializers
+
+class LoginRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+
+from rest_framework import serializers
+
+class OpenAIRequestSerializer(serializers.Serializer):
+    prompt = serializers.CharField(
+        required=True,
+        help_text="The text prompt for OpenAI to generate a response."
+    )
+    max_tokens = serializers.IntegerField(
+        required=False,
+        default=50,
+        min_value=1,
+        max_value=2048,
+        help_text="The maximum number of tokens to generate in the response. Default is 50."
+    )

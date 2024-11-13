@@ -1,0 +1,58 @@
+ProjectX - API Documentation
+Overview
+This project, ProjectX, is a Django REST Framework (DRF) application with a robust permission system, allowing for role-based access controls tailored to different departments. It leverages DRF Spectacular for API documentation and Django’s admin interface to manage users, roles, and permissions.
+
+Key Features
+Super Admin Registration: Establish a primary superuser (admin) account to oversee all administrative activities.
+Role-based Access: User groups are assigned to different departments with predefined permissions.
+Token-Based Authentication: JWT tokens are used for secure, department-specific logins.
+DRF Spectacular API Documentation: Interactive documentation available for users.
+Project Setup and Usage Guide
+1. Register Super Admin
+Endpoint: /api/register-superadmin/
+Description: This endpoint is for registering the main superuser, who will have full administrative control over the application.
+Steps:
+Send a POST request to /api/register-superadmin/ with the necessary details (fullname, company_name, email, and password).
+After successfully registering, the superuser can now access the Django admin interface.
+2. Access the Admin Interface
+URL: /admin
+Login: Use the superuser credentials created from the /api/register-superadmin/ endpoint.
+Admin Section Access:
+Once logged in, navigate to Groups and Users sections to manage other users and roles.
+3. Create and Assign Staff to Groups
+Navigate to Groups:
+In the Django Admin panel, locate the Groups section.
+Each group represents a department (e.g., Sales, Finance, Customer Support, Inventory Management).
+Permissions are preconfigured for each group, so assigning a user to a group grants them the necessary access rights.
+Create Staff Accounts:
+In the Users section, create a new user for each staff member.
+Assign Group: Assign the user to their relevant group (department).
+Staff Checkbox: Check the Staff status checkbox to grant them access to staff-level functionalities.
+Permissions: No additional permissions need to be assigned, as group membership determines permissions. (Only select additional permissions for any special access requirements.)
+4. Department-Specific Login for Staff
+Each staff member logs in to their department-specific endpoint, ensuring access restrictions are enforced based on group memberships. If a user attempts to access a department they don’t belong to, an error will be returned.
+
+URL: /<department_name>/login/ (e.g., /login/sales/, /login/finance/)
+Steps:
+Send a POST request with login credentials to the appropriate login endpoint.
+Upon successful login, an access token and refresh token will be returned for authentication.
+5. API Documentation Access
+URL: /documentation/
+
+This endpoint provides a comprehensive and interactive documentation of all available API routes, parameters, and response schemas, powered by DRF Spectacular.
+
+Routes and Endpoints Summary
+URL	Method	Description
+/api/register-superadmin/	POST	Register a superuser (main admin)
+/admin	GET	Access Django admin panel
+/login/<department_name>/	POST	Login for department-specific users
+/documentation/	GET	Interactive API documentation
+Additional Notes
+Admin Management: All user and group management is handled within the Django admin interface at /admin.
+
+Additional Notes
+Permissions: Groups control permissions automatically; individual permissions can be assigned for specialized roles.
+Authentication: JWT token-based, using access and refresh tokens for secure and scalable authentication.
+Login to the admin dashboard with browser
+the base url is http://127.0.0.1:8000/
+attachis an ERD image of the Sysytem
