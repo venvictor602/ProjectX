@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Select Department</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+        #token-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Login</h2>
+
+    <form id="login-form">
+        <label for="department">Select Department</label>
+        <select id="department" name="department" required>
+            <option value="sales">Sales</option>
+            <option value="inventory">Inventory Management</option>
+            <option value="finance">Finance</option>
+            <option value="support">Customer Support</option>
+        </select>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <div id="error-message" class="message" style="display:none;">Error: Invalid credentials or wrong department.</div>
+
+    <div id="token-container">
+        <h3>Login Successful!</h3>
+        <p><strong>Access Token:</strong> <span id="access-token"></span></p>
+        <p><strong>Refresh Token:</strong> <span id="refresh-token"></span></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('login-form').onsubmit = async function (event) {
+        event.preventDefault();
+
+        // Get the form data
+        const formData = new FormData(this);
+        const data = {
+            email: formData.get('username'),
+            password: formData.get('password'),
+        };
+
+        // Get the selected department
+        const department = formData.get('department');
+        let apiUrl = '';
+
+        // Set the API URL based on department
+        if (department === 'sales') {
+            apiUrl = 'http://localhost:8000/login/sales/';
+        } else if (department === 'inventory') {
+            apiUrl = 'http://localhost:8000/login/inventory/';
+        } else if (department === 'finance') {
+            apiUrl = 'http://localhost:8000/login/finance/';
+        } else if (department === 'support') {
+            apiUrl = 'http://localhost:8000/login/customer-support/';
+        }
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Display the tokens if login is successful
+                document.getElementById('token-container').style.display = 'block';
+                document.getElementById('access-token').textContent = result.access;
+                document.getElementById('refresh-token').textContent = result.refresh;
+                document.getElementById('error-message').style.display = 'none';
+            } else {
+                // Display an error message if login fails
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('token-container').style.display = 'none';
+            }
+        } catch (error) {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('token-container').style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
